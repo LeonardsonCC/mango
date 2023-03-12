@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/LeonardsonCC/mango/scrappers"
+	"github.com/LeonardsonCC/mango/internal/scrappers"
 	"github.com/gocolly/colly"
 )
 

@@ -3,7 +3,7 @@ package muitomanga
 import (
 	"fmt"
 
-	"github.com/LeonardsonCC/mango/scrappers"
+	"github.com/LeonardsonCC/mango/internal/scrappers"
 	"github.com/gocolly/colly"
 )
 

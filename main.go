@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/LeonardsonCC/mango/scrappers/muitomanga"
+	"github.com/LeonardsonCC/mango/internal/scrappers/muitomanga"
 )
 
 func main() {
