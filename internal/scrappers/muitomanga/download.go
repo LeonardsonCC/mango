@@ -1,10 +1,10 @@
 package muitomanga
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"sync"
@@ -72,13 +72,11 @@ func (s *Scrapper) Download(url string) *scrappers.Manga {
 
 	pages := s.collectPages(fullUrl, pageNumber)
 
-	filename := fmt.Sprintf("./%s_%s.pdf", name, chapter)
-	f, _ := os.Create(filename)
-	defer f.Close()
+	w := bytes.NewBuffer([]byte{})
 
-	pdf.GeneratePdf(pages, f)
+	pdf.GeneratePdf(pages, w)
 
-	m := scrappers.NewManga(pages, pageNumber, fmt.Sprintf("%s_%s", name, chapter), f)
+	m := scrappers.NewManga(pages, pageNumber, fmt.Sprintf("%s_%s", name, chapter), w)
 
 	return m
 }

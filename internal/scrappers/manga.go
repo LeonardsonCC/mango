@@ -1,15 +1,17 @@
 package scrappers
 
-import "io"
+import (
+	"bytes"
+)
 
 type Manga struct {
 	PagesQty int
 	Pages    []*Page
 	Title    string
-	Writer   io.Writer
+	Buffer   *bytes.Buffer
 }
 
-func NewManga(pages map[int][]byte, pagesQty int, title string, w io.Writer) *Manga {
+func NewManga(pages map[int][]byte, pagesQty int, title string, w *bytes.Buffer) *Manga {
 	p := make([]*Page, len(pages))
 	for _, page := range pages {
 		p = append(p, NewPage(page))
@@ -19,7 +21,7 @@ func NewManga(pages map[int][]byte, pagesQty int, title string, w io.Writer) *Ma
 		Pages:    p,
 		Title:    title,
 		PagesQty: pagesQty,
-		Writer:   w,
+		Buffer:   w,
 	}
 }
 
