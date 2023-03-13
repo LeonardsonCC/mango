@@ -18,7 +18,7 @@ func Start() {
 	s := muitomanga.NewScrapper()
 
 	log.Print("searching anime")
-	r := s.SearchAnime(args[0])
+	r := s.SearchManga(args[0])
 
 	log.Print("searching chapter")
 	c := s.SearchChapter(r[0].Url(), args[1])
