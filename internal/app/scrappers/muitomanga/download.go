@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/LeonardsonCC/mango/internal/pdf"
-	"github.com/LeonardsonCC/mango/internal/scrappers"
+	"github.com/LeonardsonCC/mango/internal/app/scrappers"
+	"github.com/LeonardsonCC/mango/internal/pkg/pdf"
 	"github.com/gocolly/colly"
 )
 
