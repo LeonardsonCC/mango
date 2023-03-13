@@ -37,31 +37,13 @@ func (l *listOfPages) Get(key int) []byte {
 }
 
 func (s *Scrapper) Download(url string) *scrappers.Manga {
-	var pageNumber int
-	s.Colly.OnHTML(".select_paged", func(e *colly.HTMLElement) {
-		found := e.ChildText("option")
-		re := regexp.MustCompile(`\/ (\d.)`)
-		match := re.FindStringSubmatch(found)
-
-		n, err := strconv.Atoi(match[1])
-		if err != nil {
-			return
-		}
-
-		pageNumber = n
-	})
-
-	s.Colly.Visit(url)
+	pageNumber := s.getPageNumber(url)
 
 	if pageNumber == 0 {
 		return nil
 	}
 
-	re := regexp.MustCompile(`\/ler\/(.+)\/capitulo-(\d+(?:\.\d+)?)`)
-	match := re.FindStringSubmatch(url)
-
-	name := match[1]
-	chapter := match[2]
+	name, chapter := s.extractProperties(url)
 
 	cdn := s.findTheCdn(name, chapter)
 	if cdn == "" {
@@ -81,8 +63,39 @@ func (s *Scrapper) Download(url string) *scrappers.Manga {
 	return m
 }
 
+// getPageNumber goes to manga page, and gets the page number
+func (s *Scrapper) getPageNumber(url string) int {
+	var pageNumber int
+	s.Colly.OnHTML(".select_paged", func(e *colly.HTMLElement) {
+		found := e.ChildText("option")
+		re := regexp.MustCompile(`\/ (\d.)`)
+		match := re.FindStringSubmatch(found)
+
+		n, err := strconv.Atoi(match[1])
+		if err != nil {
+			return
+		}
+
+		pageNumber = n
+	})
+
+	s.Colly.Visit(url)
+
+	return pageNumber
+}
+
+// extractProperties extract the title and chapter from url
+func (s *Scrapper) extractProperties(url string) (string, string) {
+	re := regexp.MustCompile(`\/ler\/(.+)\/capitulo-(\d+(?:\.\d+)?)`)
+	match := re.FindStringSubmatch(url)
+
+	return match[1], match[2]
+}
+
 // TODO: improve this function performance
 // maybe using channels
+// collectPages goes through each page of the manga and download it
+// reutrning the map[page]image
 func (s *Scrapper) collectPages(url string, pageNumber int) map[int][]byte {
 	pages := &listOfPages{
 		m: map[int][]byte{},
@@ -118,6 +131,8 @@ func (s *Scrapper) collectPages(url string, pageNumber int) map[int][]byte {
 	return pages.m
 }
 
+// findTheCdn tries to find the chapter in the known CDNs
+// and returns the images URL
 func (s *Scrapper) findTheCdn(name, chapter string) string {
 	for _, url := range s.imagesBaseURLs {
 		u := fmt.Sprintf("%s/imgs", url)
