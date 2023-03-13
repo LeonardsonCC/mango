@@ -7,7 +7,13 @@ import (
 	"github.com/LeonardsonCC/mango/internal/app/scrappers/muitomanga"
 )
 
-func Start() {
+type Cli struct{}
+
+func NewCli() *Cli {
+	return &Cli{}
+}
+
+func (*Cli) Start() {
 	args := os.Args[1:]
 	if len(args) != 2 || args[0] == "" || args[1] == "" {
 		fmt.Print(`usage: <binary> "anime-name" "10"`)
