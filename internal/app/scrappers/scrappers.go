@@ -1,34 +1,34 @@
 package scrappers
 
 type Scrapper interface {
-	SearchManga(query string) []*SearchAnimeResult
+	SearchManga(query string) []*SearchMangaResult
 	SearchChapter(url, query string) []*SearchChapterResult
 	Download(url string) *Manga
 }
 
-type SearchAnimeResult struct {
+type SearchMangaResult struct {
 	title  string
 	imgUrl string
 	url    string
 }
 
-func NewSearchResult(title, imgUrl, url string) *SearchAnimeResult {
-	return &SearchAnimeResult{
+func NewSearchResult(title, imgUrl, url string) *SearchMangaResult {
+	return &SearchMangaResult{
 		title:  title,
 		imgUrl: imgUrl,
 		url:    url,
 	}
 }
 
-func (s *SearchAnimeResult) Title() string {
+func (s *SearchMangaResult) Title() string {
 	return s.title
 }
 
-func (s *SearchAnimeResult) ImgUrl() string {
+func (s *SearchMangaResult) ImgUrl() string {
 	return s.imgUrl
 }
 
-func (s *SearchAnimeResult) Url() string {
+func (s *SearchMangaResult) Url() string {
 	return s.url
 }
 

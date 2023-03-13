@@ -10,8 +10,8 @@ import (
 
 // Search receives the string query and will search on muitomanga.com
 // the manga with that name
-func (s *Scrapper) SearchAnime(query string) []*scrappers.SearchAnimeResult {
-	var results []*scrappers.SearchAnimeResult
+func (s *Scrapper) SearchManga(query string) []*scrappers.SearchMangaResult {
+	var results []*scrappers.SearchMangaResult
 
 	s.Colly.OnHTML(".anime", func(e *colly.HTMLElement) {
 		img := e.ChildAttr("img", "src")

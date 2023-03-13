@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/LeonardsonCC/mango/internal/app/scrappers/muitomanga"
@@ -20,13 +19,13 @@ func Start() {
 
 	s := muitomanga.NewScrapper()
 
-	log.Print("searching manga")
+	fmt.Println("searching manga")
 	r := s.SearchManga(name)
 
-	log.Print("searching chapter")
+	fmt.Println("searching chapter")
 	c := s.SearchChapter(r[0].Url(), chapter)
 
-	log.Print("downloading chapter")
+	fmt.Println("downloading chapter")
 	manga := s.Download(c[0].Url())
 
 	filename := fmt.Sprintf("./%s.pdf", manga.Title)
