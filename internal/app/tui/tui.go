@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 
 	"github.com/LeonardsonCC/mango/internal/app/scrappers"
 	"github.com/charmbracelet/bubbles/list"
@@ -209,9 +210,13 @@ func (m *mangoTui) downloadChapterAction() {
 	m.step = StepDownloadingChapter
 	manga := m.scrapper.Download(m.chapterUrl)
 
-	f, _ := os.Create(fmt.Sprintf("%s.pdf", manga.Title))
+	filename := fmt.Sprintf("%s.pdf", manga.Title)
+	f, _ := os.Create(filename)
 	f.ReadFrom(manga.Buffer)
 	f.Close()
+
+	c := exec.Command("xdg-open", filename)
+	c.Run()
 
 	m.step = StepListChapter
 }
