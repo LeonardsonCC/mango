@@ -11,30 +11,9 @@ import (
 
 	"github.com/LeonardsonCC/mango/internal/app/scrappers"
 	"github.com/LeonardsonCC/mango/internal/pkg/pdf"
+	"github.com/LeonardsonCC/mango/pkg/syncmap"
 	"github.com/gocolly/colly"
 )
-
-type listOfPages struct {
-	sync.Mutex
-	m map[int][]byte
-}
-
-func (l *listOfPages) Store(key int, value []byte) {
-	l.Lock()
-	defer l.Unlock()
-
-	l.m[key] = value
-}
-
-func (l *listOfPages) Get(key int) []byte {
-	l.Lock()
-	defer l.Unlock()
-
-	if v, has := l.m[key]; has {
-		return v
-	}
-	return nil
-}
 
 func (s *Scrapper) Download(url string) *scrappers.Manga {
 	pageNumber := s.getPageNumber(url)
@@ -97,9 +76,7 @@ func (s *Scrapper) extractProperties(url string) (string, string) {
 // collectPages goes through each page of the manga and download it
 // reutrning the map[page]image
 func (s *Scrapper) collectPages(url string, pageNumber int) map[int][]byte {
-	pages := &listOfPages{
-		m: map[int][]byte{},
-	}
+	pages := syncmap.NewMap(map[int][]byte{})
 
 	wg := &sync.WaitGroup{}
 
@@ -128,7 +105,7 @@ func (s *Scrapper) collectPages(url string, pageNumber int) map[int][]byte {
 	}
 	wg.Wait()
 
-	return pages.m
+	return pages.Map()
 }
 
 // findTheCdn tries to find the chapter in the known CDNs
