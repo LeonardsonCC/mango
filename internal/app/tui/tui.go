@@ -3,8 +3,6 @@ package tui
 import (
 	"fmt"
 	"io"
-	"os"
-	"os/exec"
 
 	"github.com/LeonardsonCC/mango/internal/app/scrappers"
 	"github.com/charmbracelet/bubbles/list"
@@ -67,6 +65,7 @@ type mangoTui struct {
 	chapter    string
 	mangaUrl   string
 	chapterUrl string
+	loading    bool
 
 	scrapper scrappers.Scrapper
 }
@@ -112,11 +111,13 @@ func (m mangoTui) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if m.step == StepSearchManga {
 					m.manga = m.textInput.Value()
 					m.step = StepListManga
-					m.searchMangaAction()
+					m.loading = true
+					return m, m.searchMangaAction()
 				} else if m.step == StepSearchChapter {
 					m.chapter = m.textInput.Value()
 					m.step = StepListChapter
-					m.searchChapterAction()
+					m.loading = true
+					return m, m.searchChapterAction()
 				}
 				m.textInput.SetValue("")
 
@@ -129,7 +130,8 @@ func (m mangoTui) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.step = StepSearchChapter
 				} else if m.step == StepListChapter {
 					m.chapterUrl = i.value
-					m.downloadChapterAction()
+					m.loading = true
+					return m, m.downloadChapterAction()
 				}
 			}
 
@@ -137,14 +139,26 @@ func (m mangoTui) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch m.step {
 			case StepListManga:
 				m.step = StepSearchManga
+				m.textInput.SetValue("")
 			case StepSearchChapter:
 				m.step = StepListManga
+				m.textInput.SetValue("")
 			case StepListChapter:
 				m.step = StepSearchChapter
 			default:
 				return m, tea.Quit
 			}
 		}
+	case mangaSearchDone:
+		m.list.SetItems(msg)
+		m.textInput.SetValue("")
+		return m, setLoading(false)
+	case chapterSearchDone:
+		m.list.SetItems(msg)
+		return m, setLoading(false)
+	case loading:
+		m.loading = bool(msg)
+		return m, cmd
 	}
 
 	if m.step == StepListManga || m.step == StepListChapter {
@@ -160,63 +174,26 @@ func (m mangoTui) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m mangoTui) View() string {
 	var s string
 
+	if m.loading {
+		s = "Loading...\n"
+		return s
+	}
+
 	switch m.step {
 	case StepSearchManga:
-		s = "Search a manga\n"
+		s += "Search a manga\n"
 		s += m.textInput.View()
 
 	case StepListManga:
 		s += m.list.View()
 
 	case StepSearchChapter:
-		s = "What chapter do you want?\n"
+		s += "What chapter do you want?\n"
 		s += m.textInput.View()
 
 	case StepListChapter:
 		s += m.list.View()
-
-	case StepDownloadingChapter:
-		s = "Downloading...\n"
 	}
 
 	return s
-}
-
-func (m *mangoTui) searchMangaAction() {
-	// should return error to handle
-	results := m.scrapper.SearchManga(m.manga)
-
-	items := make([]list.Item, len(results))
-	for i, r := range results {
-		items[i] = item{text: r.Title(), value: r.Url()}
-	}
-
-	m.list.SetItems(items)
-}
-
-func (m *mangoTui) searchChapterAction() {
-	// should return error to handle
-	results := m.scrapper.SearchChapter(m.mangaUrl, m.chapter)
-
-	items := make([]list.Item, len(results))
-	for i, r := range results {
-		items[i] = item{text: r.Title(), value: r.Url()}
-	}
-
-	m.list.SetItems(items)
-}
-
-func (m *mangoTui) downloadChapterAction() {
-	m.step = StepDownloadingChapter
-	manga := m.scrapper.Download(m.chapterUrl)
-
-	filename := fmt.Sprintf("%s.pdf", manga.Title)
-	f, _ := os.Create(filename)
-	f.ReadFrom(manga.Buffer)
-	f.Close()
-
-	c := exec.Command("xdg-open", filename)
-	c.Run()
-
-	m.step = StepListChapter
 }
