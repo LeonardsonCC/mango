@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/LeonardsonCC/mango/internal/app/scrappers/muitomanga"
-	"github.com/LeonardsonCC/mango/internal/app/tui"
+	"github.com/LeonardsonCC/mango/internal/tui"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
