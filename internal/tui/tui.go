@@ -14,7 +14,7 @@ import (
 
 var (
 	itemStyle         = lipgloss.NewStyle()
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+	selectedItemStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("170"))
 )
 
 type item struct {
@@ -40,7 +40,7 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 	fn := itemStyle.Render
 	if index == m.Index() {
 		fn = func(s ...string) string {
-			return selectedItemStyle.Render(fmt.Sprintf("> %s", s))
+			return selectedItemStyle.Render(s...)
 		}
 	}
 
