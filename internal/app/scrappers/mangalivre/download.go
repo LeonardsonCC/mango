@@ -74,7 +74,7 @@ func (s *Scrapper) Download(u string) *scrappers.Manga {
 }
 
 func (s *Scrapper) collectPages(p map[int]string) map[int][]byte {
-	pages := syncmap.NewMap(map[int][]byte{})
+	pages := syncmap.NewMap(map[int]any{})
 
 	wg := &sync.WaitGroup{}
 
@@ -98,7 +98,7 @@ func (s *Scrapper) collectPages(p map[int]string) map[int][]byte {
 	}
 	wg.Wait()
 
-	return pages.Map()
+	return pages.Map().(map[int][]byte)
 }
 
 func getReaderToken(body []byte) string {

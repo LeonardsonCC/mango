@@ -76,7 +76,7 @@ func (s *Scrapper) extractProperties(url string) (string, string) {
 // collectPages goes through each page of the manga and download it
 // reutrning the map[page]image
 func (s *Scrapper) collectPages(url string, pageNumber int) map[int][]byte {
-	pages := syncmap.NewMap(map[int][]byte{})
+	pages := syncmap.NewMap(map[int]any{})
 
 	wg := &sync.WaitGroup{}
 
@@ -105,7 +105,7 @@ func (s *Scrapper) collectPages(url string, pageNumber int) map[int][]byte {
 	}
 	wg.Wait()
 
-	return pages.Map()
+	return pages.Map().(map[int][]byte)
 }
 
 // findTheCdn tries to find the chapter in the known CDNs
