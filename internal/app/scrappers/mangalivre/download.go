@@ -68,7 +68,7 @@ func (s *Scrapper) Download(u string) *scrappers.Manga {
 
 	pdf.GeneratePdf(images, w)
 
-	m := scrappers.NewManga(images, len(images), releaseId, w)
+	m := scrappers.NewManga(images, len(images), getMangaName(res), w)
 
 	return m
 }
@@ -109,6 +109,12 @@ func getReaderToken(body []byte) string {
 
 func getReleaseId(body []byte) string {
 	re := regexp.MustCompile(`window\.READER_ID_RELEASE = '(.*)';`)
+	match := re.FindStringSubmatch(string(body))
+	return match[1]
+}
+
+func getMangaName(body []byte) string {
+	re := regexp.MustCompile(`<title>(.*)<\/title>`)
 	match := re.FindStringSubmatch(string(body))
 	return match[1]
 }
