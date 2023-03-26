@@ -36,9 +36,12 @@ func GeneratePdf(pages map[int][]byte, w io.Writer) {
 	}
 
 	for i := 1; i < len(pages); i++ {
-		if page, has := pages[i]; has {
-			r := bytes.NewReader(page)
-			indRef, _ := pdfcpu.NewPageForImage(ctx.XRefTable, r, pagesIndRef, imp)
+		if page, has := pages[i]; has && page != nil {
+			indRef, err := pdfcpu.NewPageForImage(ctx.XRefTable, bytes.NewReader(page), pagesIndRef, imp)
+			// just ignore the image errors
+			if err != nil {
+				continue
+			}
 
 			if err = model.AppendPageTree(indRef, 1, pagesDict); err != nil {
 				panic(err)
