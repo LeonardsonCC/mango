@@ -74,13 +74,13 @@ func (s *Scrapper) Download(u string) *scrappers.Manga {
 }
 
 func (s *Scrapper) collectPages(p map[int]string) map[int][]byte {
-	pages := syncmap.NewMap(map[int]any{})
+	pages := syncmap.NewMap(map[int][]byte{})
 
 	wg := &sync.WaitGroup{}
 
 	for i, page := range p {
 		wg.Add(1)
-		go func(page string, i int) {
+		go func(wg *sync.WaitGroup, page string, i int) {
 			resp, err := http.Get(page)
 			if err != nil {
 				log.Fatal(err)
@@ -94,11 +94,11 @@ func (s *Scrapper) collectPages(p map[int]string) map[int][]byte {
 
 			pages.Store(i, res)
 			wg.Done()
-		}(page, i)
+		}(wg, page, i)
 	}
 	wg.Wait()
 
-	return pages.Map().(map[int][]byte)
+	return pages.Map()
 }
 
 func getReaderToken(body []byte) string {

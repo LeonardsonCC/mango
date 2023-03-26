@@ -2,34 +2,37 @@ package syncmap
 
 import "sync"
 
-type Map struct {
+type Map[K comparable, V any] struct {
 	sync.Mutex
-	m map[int]any
+	m map[K]V
 }
 
-func NewMap(m map[int]any) *Map {
-	return &Map{
+func NewMap[K comparable, V any](m map[K]V) *Map[K, V] {
+	return &Map[K, V]{
 		m: m,
 	}
 }
 
-func (l *Map) Map() any {
+func (l *Map[K, V]) Map() map[K]V {
 	return l.m
 }
 
-func (l *Map) Store(key int, value any) {
+func (l *Map[K, V]) Store(key K, value V) {
 	l.Lock()
 	defer l.Unlock()
 
 	l.m[key] = value
 }
 
-func (l *Map) Get(key int) any {
+func (l *Map[K, V]) Get(key K) V {
 	l.Lock()
 	defer l.Unlock()
 
 	if v, has := l.m[key]; has {
 		return v
 	}
-	return nil
+
+	// workaround to zero value of V
+	var n V
+	return n
 }
