@@ -1,8 +1,15 @@
 package main
 
-import "github.com/LeonardsonCC/mango/cmd"
+import (
+	"os"
+
+	"github.com/LeonardsonCC/mango/cmd"
+)
 
 func main() {
-	// cmd.NewCli().Start()
-	cmd.NewTui().Start()
+	if len(os.Args) > 1 {
+		cmd.NewCli().Start()
+	} else {
+		cmd.NewTui().Start()
+	}
 }

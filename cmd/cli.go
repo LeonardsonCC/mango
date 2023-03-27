@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/LeonardsonCC/mango/internal/app/scrappers/muitomanga"
+	"github.com/LeonardsonCC/mango/internal/app/scrappers/mangalivre"
 )
 
 type Cli struct{}
@@ -23,7 +23,7 @@ func (*Cli) Start() {
 	name := args[0]
 	chapter := args[1]
 
-	s := muitomanga.NewScrapper()
+	s := mangalivre.NewScrapper()
 
 	fmt.Println("searching manga")
 	r := s.SearchManga(name)
