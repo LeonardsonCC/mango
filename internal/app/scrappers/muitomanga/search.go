@@ -10,7 +10,7 @@ import (
 
 // Search receives the string query and will search on muitomanga.com
 // the manga with that name
-func (s *Scrapper) SearchManga(query string) []*scrappers.SearchMangaResult {
+func (s *Scrapper) SearchManga(query string) ([]*scrappers.SearchMangaResult, error) {
 	var results []*scrappers.SearchMangaResult
 
 	s.Colly.OnHTML(".anime", func(e *colly.HTMLElement) {
@@ -23,9 +23,12 @@ func (s *Scrapper) SearchManga(query string) []*scrappers.SearchMangaResult {
 		results = append(results, r)
 	})
 
-	s.Colly.Visit(fmt.Sprintf("%s/buscar?q=%s", s.baseURL, query))
+	err := s.Colly.Visit(fmt.Sprintf("%s/buscar?q=%s", s.baseURL, query))
+	if err != nil {
+		return nil, err
+	}
 
-	return results
+	return results, nil
 }
 
 func (s *Scrapper) SearchChapter(url, query string) []*scrappers.SearchChapterResult {

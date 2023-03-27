@@ -26,7 +26,11 @@ func (*Cli) Start() {
 	s := mangalivre.NewScrapper()
 
 	fmt.Println("searching manga")
-	r := s.SearchManga(name)
+	r, err := s.SearchManga(name)
+	if err != nil {
+		fmt.Printf("failed to find: %s", name)
+		return
+	}
 
 	fmt.Println("searching chapter")
 	c := s.SearchChapter(r[0].Url(), chapter)

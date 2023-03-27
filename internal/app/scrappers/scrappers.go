@@ -1,7 +1,7 @@
 package scrappers
 
 type Scrapper interface {
-	SearchManga(query string) []*SearchMangaResult
+	SearchManga(query string) ([]*SearchMangaResult, error)
 	SearchChapter(url, query string) []*SearchChapterResult
 	Download(url string) *Manga
 }

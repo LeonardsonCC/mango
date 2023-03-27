@@ -11,10 +11,16 @@ type Manga struct {
 	Buffer   *bytes.Buffer
 }
 
+type Page struct {
+	Content []byte
+}
+
 func NewManga(pages map[int][]byte, pagesQty int, title string, w *bytes.Buffer) *Manga {
 	p := make([]*Page, len(pages))
 	for _, page := range pages {
-		p = append(p, NewPage(page))
+		p = append(p, &Page{
+			Content: page,
+		})
 	}
 
 	return &Manga{
@@ -22,15 +28,5 @@ func NewManga(pages map[int][]byte, pagesQty int, title string, w *bytes.Buffer)
 		Title:    title,
 		PagesQty: pagesQty,
 		Buffer:   w,
-	}
-}
-
-type Page struct {
-	Content []byte
-}
-
-func NewPage(p []byte) *Page {
-	return &Page{
-		Content: p,
 	}
 }

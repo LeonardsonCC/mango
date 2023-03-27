@@ -32,7 +32,7 @@ func TestSearchMuitoManga(t *testing.T) {
 		s := mangalivre.NewScrapper()
 
 		for _, c := range testCases {
-			r := s.SearchManga(c.q)
+			r, _ := s.SearchManga(c.q)
 
 			if len(r) == 0 {
 				t.Error("failed to get thumbnails")

@@ -12,7 +12,7 @@ import (
 	"github.com/LeonardsonCC/mango/internal/app/scrappers"
 )
 
-func (s *Scrapper) SearchManga(query string) []*scrappers.SearchMangaResult {
+func (s *Scrapper) SearchManga(query string) ([]*scrappers.SearchMangaResult, error) {
 	var results []*scrappers.SearchMangaResult
 
 	formData := url.Values{
@@ -24,7 +24,7 @@ func (s *Scrapper) SearchManga(query string) []*scrappers.SearchMangaResult {
 	//Not working, the post data is not a form
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/lib/search/series.json", s.baseURL), strings.NewReader(formData.Encode()))
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -32,14 +32,14 @@ func (s *Scrapper) SearchManga(query string) []*scrappers.SearchMangaResult {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	result := make(map[string]interface{})
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
 	for _, r := range result["series"].([]interface{}) {
@@ -51,7 +51,7 @@ func (s *Scrapper) SearchManga(query string) []*scrappers.SearchMangaResult {
 		))
 	}
 
-	return results
+	return results, nil
 }
 
 func (s *Scrapper) SearchChapter(u, query string) []*scrappers.SearchChapterResult {

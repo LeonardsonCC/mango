@@ -13,7 +13,7 @@ import (
 func TestMangaLivre(t *testing.T) {
 	t.Run("download range of mangas", func(t *testing.T) {
 		s := mangalivre.NewScrapper()
-		results := s.SearchManga("relife")
+		results, _ := s.SearchManga("relife")
 
 		chapters := s.SearchChapter(results[0].Url(), "")
 

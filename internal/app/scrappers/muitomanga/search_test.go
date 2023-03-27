@@ -13,6 +13,7 @@ func TestSearchMuitoManga(t *testing.T) {
 			expectedUrl    string
 			expectedImgUrl string
 			expectedTitle  string
+			expectedErr    error
 		}
 		testCases := []tc{
 			{
@@ -32,7 +33,11 @@ func TestSearchMuitoManga(t *testing.T) {
 		s := muitomanga.NewScrapper()
 
 		for _, c := range testCases {
-			r := s.SearchManga(c.q)
+			r, err := s.SearchManga(c.q)
+
+			if c.expectedErr != err {
+				t.Error("error is not match")
+			}
 
 			if len(r) == 0 {
 				t.Error("failed to get thumbnails")
