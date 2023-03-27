@@ -38,7 +38,10 @@ func (*Cli) Start() {
 	}
 
 	fmt.Println("downloading chapter")
-	manga := s.Download(c[0].Url())
+	manga, err := s.Download(c[0].Url())
+	if err != nil {
+		fmt.Printf("failed to download chapter: %s", chapter)
+	}
 
 	filename := fmt.Sprintf("./%s.pdf", manga.Title)
 	f, _ := os.Create(filename)

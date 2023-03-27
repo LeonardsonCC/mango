@@ -17,7 +17,7 @@ import (
 	"github.com/LeonardsonCC/mango/pkg/syncmap"
 )
 
-func (s *Scrapper) Download(u string) *scrappers.Manga {
+func (s *Scrapper) Download(u string) (*scrappers.Manga, error) {
 	resp, err := http.Get(u)
 	if err != nil {
 		log.Fatal(err)
@@ -26,7 +26,7 @@ func (s *Scrapper) Download(u string) *scrappers.Manga {
 
 	res, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	readerToken := getReaderToken(res)
@@ -41,19 +41,19 @@ func (s *Scrapper) Download(u string) *scrappers.Manga {
 	//Not working, the post data is not a form
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/leitor/pages/%s.json", s.baseURL, releaseId), strings.NewReader(formData.Encode()))
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
 	resp, err = client.Do(req)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	result := make(map[string]interface{})
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
 	p := make(map[int]string)
@@ -66,11 +66,20 @@ func (s *Scrapper) Download(u string) *scrappers.Manga {
 
 	w := bytes.NewBuffer([]byte{})
 
-	pdf.GeneratePdf(images, w)
+	err = pdf.GeneratePdf(images, w)
+
+	// print warnings from pdf generation
+	if v, ok := err.(*pdf.Warnings); ok {
+		if len(v.Warns) > 0 {
+			fmt.Print(err.Error())
+		}
+	} else {
+		return nil, err
+	}
 
 	m := scrappers.NewManga(images, len(images), getMangaName(res), w)
 
-	return m
+	return m, nil
 }
 
 func (s *Scrapper) collectPages(p map[int]string) map[int][]byte {

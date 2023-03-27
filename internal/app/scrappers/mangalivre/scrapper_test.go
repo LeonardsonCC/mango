@@ -28,7 +28,7 @@ func TestMangaLivre(t *testing.T) {
 		for _, c := range cc[0:25] {
 			wg.Add(1)
 			go func(c *scrappers.SearchChapterResult, wg *sync.WaitGroup) {
-				manga := s.Download(c.Url())
+				manga, _ := s.Download(c.Url())
 
 				filename := fmt.Sprintf("relife/%s.pdf", manga.Title)
 				f, _ := os.Create(filename)

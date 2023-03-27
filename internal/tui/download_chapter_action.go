@@ -10,7 +10,11 @@ import (
 
 func (m *mangoTui) downloadChapterAction() tea.Cmd {
 	return func() tea.Msg {
-		manga := m.scrapper.Download(m.chapterUrl)
+		manga, err := m.scrapper.Download(m.chapterUrl)
+		if err != nil {
+			// TODO: handle error better
+			return loading(false)
+		}
 
 		filename := fmt.Sprintf("/tmp/%s.pdf", manga.Title)
 		f, _ := os.Create(filename)

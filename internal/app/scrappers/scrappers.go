@@ -3,7 +3,7 @@ package scrappers
 type Scrapper interface {
 	SearchManga(query string) ([]*SearchMangaResult, error)
 	SearchChapter(url, query string) ([]*SearchChapterResult, error)
-	Download(url string) *Manga
+	Download(url string) (*Manga, error)
 }
 
 type SearchMangaResult struct {

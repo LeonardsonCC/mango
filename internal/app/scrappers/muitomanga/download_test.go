@@ -23,7 +23,7 @@ func TestDownloadMuitoManga(t *testing.T) {
 		s := muitomanga.NewScrapper()
 
 		for _, c := range testCases {
-			manga := s.Download(c.url)
+			manga, _ := s.Download(c.url)
 
 			t.Errorf("%+v", manga)
 		}

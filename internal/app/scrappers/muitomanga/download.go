@@ -2,6 +2,7 @@ package muitomanga
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,18 +16,18 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func (s *Scrapper) Download(url string) *scrappers.Manga {
+func (s *Scrapper) Download(url string) (*scrappers.Manga, error) {
 	pageNumber := s.getPageNumber(url)
 
 	if pageNumber == 0 {
-		return nil
+		return nil, errors.New("can't find the page number for this url")
 	}
 
 	name, chapter := s.extractProperties(url)
 
 	cdn := s.findTheCdn(name, chapter)
 	if cdn == "" {
-		return nil
+		return nil, errors.New("can't find the cdn to download the pages for this url")
 	}
 
 	fullUrl := fmt.Sprintf("%s/%s/%s", cdn, name, chapter)
@@ -35,11 +36,20 @@ func (s *Scrapper) Download(url string) *scrappers.Manga {
 
 	w := bytes.NewBuffer([]byte{})
 
-	pdf.GeneratePdf(pages, w)
+	err := pdf.GeneratePdf(pages, w)
+
+	// print warnings from pdf generation
+	if v, ok := err.(*pdf.Warnings); ok {
+		if len(v.Warns) > 0 {
+			fmt.Print(err.Error())
+		}
+	} else {
+		return nil, err
+	}
 
 	m := scrappers.NewManga(pages, pageNumber, fmt.Sprintf("%s_%s", name, chapter), w)
 
-	return m
+	return m, nil
 }
 
 // getPageNumber goes to manga page, and gets the page number
