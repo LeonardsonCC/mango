@@ -15,7 +15,7 @@ func TestMangaLivre(t *testing.T) {
 		s := mangalivre.NewScrapper()
 		results, _ := s.SearchManga("relife")
 
-		chapters := s.SearchChapter(results[0].Url(), "")
+		chapters, _ := s.SearchChapter(results[0].Url(), "")
 
 		cc := make([]*scrappers.SearchChapterResult, len(chapters)+1)
 		j := 0

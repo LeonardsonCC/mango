@@ -79,7 +79,7 @@ func TestSearchMuitoManga(t *testing.T) {
 		}
 
 		for _, c := range testCases {
-			r := s.SearchChapter(c.url, c.q)
+			r, _ := s.SearchChapter(c.url, c.q)
 
 			if len(r) == 0 {
 				t.Error("failed to get chapters")

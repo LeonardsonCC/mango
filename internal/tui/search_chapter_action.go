@@ -10,7 +10,11 @@ type chapterSearchDone []list.Item
 func (m *mangoTui) searchChapterAction() tea.Cmd {
 	return func() tea.Msg {
 		// should return error to handle
-		results := m.scrapper.SearchChapter(m.mangaUrl, m.chapter)
+		results, err := m.scrapper.SearchChapter(m.mangaUrl, m.chapter)
+		if err != nil {
+			// TODO: handle error
+			return chapterSearchDone([]list.Item{})
+		}
 
 		items := make([]list.Item, len(results))
 		for i, r := range results {

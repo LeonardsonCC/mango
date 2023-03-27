@@ -54,7 +54,7 @@ func (s *Scrapper) SearchManga(query string) ([]*scrappers.SearchMangaResult, er
 	return results, nil
 }
 
-func (s *Scrapper) SearchChapter(u, query string) []*scrappers.SearchChapterResult {
+func (s *Scrapper) SearchChapter(u, query string) ([]*scrappers.SearchChapterResult, error) {
 	var chapters []*scrappers.SearchChapterResult
 
 	re := regexp.MustCompile(`.*\/(\d*)`)
@@ -71,17 +71,16 @@ func (s *Scrapper) SearchChapter(u, query string) []*scrappers.SearchChapterResu
 		}
 
 		client := &http.Client{}
-
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/series/chapters_list.json?%s", s.baseURL, formData.Encode()), nil)
 		if err != nil {
-			log.Fatalln(err)
+			return nil, err
 		}
 
 		req.Header.Set("x-requested-with", "XMLHttpRequest")
 
 		resp, err := client.Do(req)
 		if err != nil {
-			log.Fatalln(err)
+			return nil, err
 		}
 		defer resp.Body.Close()
 
@@ -118,5 +117,5 @@ func (s *Scrapper) SearchChapter(u, query string) []*scrappers.SearchChapterResu
 		}
 	}
 
-	return results
+	return results, nil
 }

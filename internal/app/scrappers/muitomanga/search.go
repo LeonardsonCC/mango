@@ -31,7 +31,7 @@ func (s *Scrapper) SearchManga(query string) ([]*scrappers.SearchMangaResult, er
 	return results, nil
 }
 
-func (s *Scrapper) SearchChapter(url, query string) []*scrappers.SearchChapterResult {
+func (s *Scrapper) SearchChapter(url, query string) ([]*scrappers.SearchChapterResult, error) {
 	var chapters []*scrappers.SearchChapterResult
 
 	s.Colly.OnHTML(".single-chapter", func(e *colly.HTMLElement) {
@@ -44,10 +44,13 @@ func (s *Scrapper) SearchChapter(url, query string) []*scrappers.SearchChapterRe
 		chapters = append(chapters, r)
 	})
 
-	s.Colly.Visit(url)
+	err := s.Colly.Visit(url)
+	if err != nil {
+		return nil, err
+	}
 
 	if query == "" {
-		return chapters
+		return chapters, nil
 	}
 
 	var results []*scrappers.SearchChapterResult
@@ -59,5 +62,5 @@ func (s *Scrapper) SearchChapter(url, query string) []*scrappers.SearchChapterRe
 		}
 	}
 
-	return results
+	return results, nil
 }

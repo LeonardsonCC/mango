@@ -29,11 +29,13 @@ func (*Cli) Start() {
 	r, err := s.SearchManga(name)
 	if err != nil {
 		fmt.Printf("failed to find: %s", name)
-		return
 	}
 
 	fmt.Println("searching chapter")
-	c := s.SearchChapter(r[0].Url(), chapter)
+	c, err := s.SearchChapter(r[0].Url(), chapter)
+	if err != nil {
+		fmt.Printf("failed to find chapter: %s", chapter)
+	}
 
 	fmt.Println("downloading chapter")
 	manga := s.Download(c[0].Url())
