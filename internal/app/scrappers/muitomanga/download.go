@@ -12,7 +12,7 @@ import (
 
 	"github.com/LeonardsonCC/mango/internal/app/scrappers"
 	"github.com/LeonardsonCC/mango/internal/pkg/pdf"
-	"github.com/LeonardsonCC/mango/pkg/syncmap"
+	"github.com/LeonardsonCC/mango/pkg/mysync"
 	"github.com/gocolly/colly"
 )
 
@@ -86,7 +86,7 @@ func (s *Scrapper) extractProperties(url string) (string, string) {
 // collectPages goes through each page of the manga and download it
 // reutrning the map[page]image
 func (s *Scrapper) collectPages(url string, pageNumber int) map[int][]byte {
-	pages := syncmap.NewMap(map[int][]byte{})
+	pages := mysync.NewMap(map[int][]byte{})
 
 	wg := &sync.WaitGroup{}
 

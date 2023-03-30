@@ -14,7 +14,7 @@ import (
 
 	"github.com/LeonardsonCC/mango/internal/app/scrappers"
 	"github.com/LeonardsonCC/mango/internal/pkg/pdf"
-	"github.com/LeonardsonCC/mango/pkg/syncmap"
+	"github.com/LeonardsonCC/mango/pkg/mysync"
 )
 
 func (s *Scrapper) Download(u string) (*scrappers.Manga, error) {
@@ -83,7 +83,7 @@ func (s *Scrapper) Download(u string) (*scrappers.Manga, error) {
 }
 
 func (s *Scrapper) collectPages(p map[int]string) map[int][]byte {
-	pages := syncmap.NewMap(map[int][]byte{})
+	pages := mysync.NewMap(map[int][]byte{})
 
 	wg := &sync.WaitGroup{}
 
