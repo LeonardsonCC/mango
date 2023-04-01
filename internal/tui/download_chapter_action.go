@@ -16,7 +16,7 @@ func (m *mangoTui) downloadChapterAction() tea.Cmd {
 			return loading(false)
 		}
 
-		filename := fmt.Sprintf("/tmp/%s.pdf", manga.Title)
+		filename := fmt.Sprintf("./%s.pdf", manga.Title)
 		f, _ := os.Create(filename)
 		f.ReadFrom(manga.Buffer)
 		f.Close()
