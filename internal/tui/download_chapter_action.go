@@ -3,8 +3,8 @@ package tui
 import (
 	"fmt"
 	"os"
-	"os/exec"
 
+	os_cmds "github.com/LeonardsonCC/mango/pkg/os-cmds"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -21,8 +21,11 @@ func (m *mangoTui) downloadChapterAction() tea.Cmd {
 		f.ReadFrom(manga.Buffer)
 		f.Close()
 
-		c := exec.Command("xdg-open", filename)
-		c.Run()
+		err = os_cmds.OpenPdf(filename)
+		if err != nil {
+			// TODO: handle error better
+			return loading(false)
+		}
 
 		return loading(false)
 	}
