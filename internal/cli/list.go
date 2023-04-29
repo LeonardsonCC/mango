@@ -19,28 +19,25 @@ func (c *Cli) List() *cobra.Command {
 func (c *Cli) list(cmd *cobra.Command, args []string) {
 	name := args[0]
 
-	results, err := c.scrapper.SearchManga(name)
+	results, err := c.manager.ListChapters(name)
 	if err != nil {
-		fmt.Println(colors.Errors.Sprintf("failed to search by %s: %s", name, err.Error()))
+		fmt.Println(colors.Errors.Sprintf("failed to list chapters: %s", err.Error()))
 	}
 
 	if len(results) < 1 {
-		fmt.Println(colors.Errors.Sprint("manga not found"))
-		return
-	}
-
-	m := results[0]
-	chapters, err := c.scrapper.SearchChapter(m.Url(), "")
-	if err != nil {
-		fmt.Println(colors.Errors.Sprintf("failed to search chapters: %s", err.Error()))
-	}
-
-	if len(chapters) < 1 {
 		fmt.Println(colors.Errors.Sprint("no chapters found for this manga"))
 		return
 	}
 
-	for _, r := range chapters {
-		fmt.Println(r.Title())
+	for k, r := range results {
+		fmt.Println(colors.Info.Sprint(k))
+
+		if len(r) == 0 {
+			fmt.Println(colors.Errors.Sprint("no chapters found"))
+		}
+
+		for _, c := range r {
+			fmt.Println(c.Title())
+		}
 	}
 }

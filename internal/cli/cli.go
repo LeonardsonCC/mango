@@ -1,15 +1,15 @@
 package cli
 
 import (
-	"github.com/LeonardsonCC/mango/internal/app/scrappers"
+	"github.com/LeonardsonCC/mango/internal/app/manager"
 )
 
 type Cli struct {
-	scrapper scrappers.Scrapper
+	manager *manager.Manager
 }
 
-func NewCli(s scrappers.Scrapper) *Cli {
+func NewCli() *Cli {
 	return &Cli{
-		scrapper: s,
+		manager.NewManager(),
 	}
 }

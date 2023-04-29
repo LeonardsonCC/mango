@@ -21,36 +21,9 @@ func (c *Cli) download(cmd *cobra.Command, args []string) {
 	name := args[0]
 	chapter := args[1]
 
-	fmt.Printf("searching %s...\n", name)
-	r, err := c.scrapper.SearchManga(name)
+	err := c.manager.Download(name, chapter)
 	if err != nil {
-		fmt.Println(colors.Errors.Sprintf("failed to find: %s", name))
+		fmt.Println(colors.Errors.Sprintf("error: %v", err))
+		os.Exit(1)
 	}
-
-	fmt.Printf("searching chapter %s...\n", chapter)
-	chap, err := c.scrapper.SearchChapter(r[0].Url(), chapter)
-	if err != nil {
-		fmt.Println(colors.Errors.Sprintf("failed to find chapter: %s", chapter))
-	}
-
-	if len(chap) < 1 {
-		fmt.Println(colors.Errors.Sprintf("chapter not found: %s", chapter))
-		return
-	}
-
-	fmt.Printf("downloading chapter %s from %s\n", chap[0].Title(), r[0].Title())
-	manga, err := c.scrapper.Download(chap[0].Url())
-	if err != nil {
-		fmt.Println(colors.Errors.Sprintf("failed to download chapter: %s", chapter))
-	}
-
-	filename := fmt.Sprintf("./%s.pdf", manga.Title)
-	f, _ := os.Create(filename)
-	defer f.Close()
-
-	_, err = f.Write(manga.Buffer.Bytes())
-	if err != nil {
-		fmt.Println(colors.Errors.Sprintf("failed to save pdf"))
-	}
-
 }

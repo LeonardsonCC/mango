@@ -19,12 +19,21 @@ func (c *Cli) Search() *cobra.Command {
 func (c *Cli) search(cmd *cobra.Command, args []string) {
 	name := args[0]
 
-	results, err := c.scrapper.SearchManga(name)
+	results, err := c.manager.Search(name)
 	if err != nil {
 		fmt.Println(colors.Errors.Sprintf("failed to search by %s: %s", name, err.Error()))
 	}
 
-	for _, r := range results {
-		fmt.Println(r.Title())
+	for k, scrapper := range results {
+		fmt.Print(colors.Info.Sprintf("%s\n", k))
+
+		if len(scrapper) == 0 {
+			fmt.Print(colors.Warning.Sprint("no results..."))
+		}
+
+		for _, r := range scrapper {
+			fmt.Println(r.Title())
+		}
+		fmt.Printf("\n\n")
 	}
 }

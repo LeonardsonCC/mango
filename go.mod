@@ -7,6 +7,7 @@ require (
 	github.com/gocolly/colly v1.2.0
 	github.com/pdfcpu/pdfcpu v0.4.0
 	github.com/spf13/cobra v1.7.0
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
 )
 
 require (

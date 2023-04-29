@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/LeonardsonCC/mango/internal/app/scrappers/mangalivre"
 	"github.com/LeonardsonCC/mango/internal/cli"
 	"github.com/spf13/cobra"
 )
@@ -15,8 +15,7 @@ func NewCli() *Cli {
 }
 
 func (*Cli) Start() {
-	sc := mangalivre.NewScrapper()
-	c := cli.NewCli(sc)
+	c := cli.NewCli()
 
 	root := cobra.Command{}
 	root.AddCommand(c.Download())
@@ -25,5 +24,6 @@ func (*Cli) Start() {
 
 	if err := root.Execute(); err != nil {
 		fmt.Println("failed to run command: ", err)
+		os.Exit(1)
 	}
 }

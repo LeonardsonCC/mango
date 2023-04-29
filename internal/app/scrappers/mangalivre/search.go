@@ -42,6 +42,10 @@ func (s *Scrapper) SearchManga(query string) ([]*scrappers.SearchMangaResult, er
 		return nil, err
 	}
 
+	if _, ok := result["series"].([]interface{}); !ok {
+		return results, nil
+	}
+
 	for _, r := range result["series"].([]interface{}) {
 		re := r.(map[string]interface{})
 		results = append(results, scrappers.NewSearchResult(
