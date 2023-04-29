@@ -10,6 +10,9 @@ type Cli struct {
 
 func NewCli() *Cli {
 	return &Cli{
-		manager.NewManager(),
+		manager: manager.NewManager(),
 	}
+}
+func (c *Cli) SetScrapper(scrapper string) {
+	c.manager.SetScrapper(scrapper)
 }

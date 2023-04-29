@@ -14,10 +14,17 @@ func NewCli() *Cli {
 	return &Cli{}
 }
 
+var (
+	c        = cli.NewCli()
+	scrapper = ""
+)
+
 func (*Cli) Start() {
-	c := cli.NewCli()
+	cobra.OnInitialize(initialize)
 
 	root := cobra.Command{}
+	root.PersistentFlags().StringVarP(&scrapper, "site", "s", "", "Specify the one scrapper, supported: MuitoManga, MangaLivre")
+
 	root.AddCommand(c.Download())
 	root.AddCommand(c.Search())
 	root.AddCommand(c.List())
@@ -26,4 +33,8 @@ func (*Cli) Start() {
 		fmt.Println("failed to run command: ", err)
 		os.Exit(1)
 	}
+}
+
+func initialize() {
+	c.SetScrapper(scrapper)
 }

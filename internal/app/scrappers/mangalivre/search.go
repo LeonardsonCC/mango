@@ -98,6 +98,10 @@ func (s *Scrapper) SearchChapter(u, query string) ([]*scrappers.SearchChapterRes
 			break
 		}
 
+		if _, ok := result["chapters"].([]interface{}); !ok {
+			break
+		}
+
 		for _, chapter := range result["chapters"].([]interface{}) {
 			link := ""
 			c := chapter.(map[string]interface{})
