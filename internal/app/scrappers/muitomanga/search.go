@@ -57,7 +57,7 @@ func (s *Scrapper) SearchChapter(url, query string) ([]*scrappers.SearchChapterR
 
 	// searching using for (oldschool method)
 	for _, chapter := range chapters {
-		if strings.Contains(chapter.Title(), fmt.Sprintf("#%s", query)) {
+		if strings.Contains(chapter.Title(), fmt.Sprintf("#%s ", query)) {
 			results = append(results, chapter)
 		}
 	}

@@ -7,12 +7,15 @@ import (
 	"github.com/gocolly/colly"
 )
 
+const ScrapperName = "MangaLivre"
+
 var mainURL = "mangalivre.net"
 var imagesURL = []string{
 	"static2.mangalivre.net/firefox/",
 }
 
 type Scrapper struct {
+	name           string
 	baseURL        string
 	imagesBaseURLs []string
 	Colly          *colly.Collector
@@ -30,8 +33,13 @@ func NewScrapper() scrappers.Scrapper {
 	}
 
 	return &Scrapper{
+		name:           ScrapperName,
 		Colly:          c,
 		baseURL:        fmt.Sprintf("https://%s", mainURL),
 		imagesBaseURLs: imgsBaseUrls,
 	}
+}
+
+func (s *Scrapper) Name() string {
+	return s.name
 }

@@ -4,6 +4,7 @@ type Scrapper interface {
 	SearchManga(query string) ([]*SearchMangaResult, error)
 	SearchChapter(url, query string) ([]*SearchChapterResult, error)
 	Download(url string) (*Manga, error)
+	Name() string
 }
 
 type SearchMangaResult struct {

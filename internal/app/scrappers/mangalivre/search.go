@@ -109,12 +109,15 @@ func (s *Scrapper) SearchChapter(u, query string) ([]*scrappers.SearchChapterRes
 	}
 
 	var results []*scrappers.SearchChapterResult
-
 	// searching using for (oldschool method)
-	for _, chapter := range chapters {
-		if strings.Contains(chapter.Title(), query) {
-			results = append(results, chapter)
+	if query != "" {
+		for _, chapter := range chapters {
+			if strings.EqualFold(chapter.Title(), query) {
+				results = append(results, chapter)
+			}
 		}
+	} else {
+		results = chapters
 	}
 
 	return results, nil
