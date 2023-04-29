@@ -17,6 +17,7 @@ func NewCli() *Cli {
 var (
 	c        = cli.NewCli()
 	scrapper = ""
+	output   = ""
 )
 
 func (*Cli) Start() {
@@ -24,6 +25,7 @@ func (*Cli) Start() {
 
 	root := cobra.Command{}
 	root.PersistentFlags().StringVarP(&scrapper, "site", "s", "", "Specify the one scrapper, supported: MuitoManga, MangaLivre")
+	root.PersistentFlags().StringVarP(&output, "output", "o", "", "Output folder")
 
 	root.AddCommand(c.Download())
 	root.AddCommand(c.Search())
@@ -37,4 +39,8 @@ func (*Cli) Start() {
 
 func initialize() {
 	c.SetScrapper(scrapper)
+
+	if err := c.SetOutput(output); err != nil {
+		fmt.Printf("failed to set output folder %s\n", output)
+	}
 }

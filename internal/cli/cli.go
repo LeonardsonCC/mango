@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"os"
+
 	"github.com/LeonardsonCC/mango/internal/app/manager"
 )
 
@@ -15,4 +17,17 @@ func NewCli() *Cli {
 }
 func (c *Cli) SetScrapper(scrapper string) {
 	c.manager.SetScrapper(scrapper)
+}
+
+func (c *Cli) SetOutput(path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err = os.Mkdir(path, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
+	c.manager.SetOutput(path)
+
+	return nil
 }

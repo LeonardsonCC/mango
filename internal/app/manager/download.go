@@ -3,6 +3,7 @@ package manager
 import (
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/LeonardsonCC/mango/internal/app/scrappers"
 	"github.com/LeonardsonCC/mango/pkg/mysync"
@@ -72,7 +73,7 @@ func (m *Manager) DownloadChapter(name, chapter string) error {
 		return fmt.Errorf("failed to find chapter %s in manga %s", name, chapter)
 	}
 
-	filename := fmt.Sprintf("./%s.pdf", manga.Title)
+	filename := path.Join(m.output, fmt.Sprintf("%s.pdf", manga.Title))
 	f, _ := os.Create(filename)
 	defer f.Close()
 
@@ -139,16 +140,16 @@ func (m *Manager) DownloadManga(name string) error {
 			for _, chap := range scr {
 				chap := chap
 				g.Go(func() error {
-					m, err := m.scrappers[k].Download(chap.Url())
+					mang, err := m.scrappers[k].Download(chap.Url())
 					if err != nil {
 						return err
 					}
 
-					filename := fmt.Sprintf("./%s.pdf", m.Title)
+					filename := path.Join(m.output, fmt.Sprintf("%s.pdf", mang.Title))
 					f, _ := os.Create(filename)
 					defer f.Close()
 
-					_, err = f.Write(m.Buffer.Bytes())
+					_, err = f.Write(mang.Buffer.Bytes())
 					if err != nil {
 						return fmt.Errorf("failed to save pdf")
 					}

@@ -13,6 +13,7 @@ var scrp = map[string]scrappers.Scrapper{
 
 type Manager struct {
 	scrappers map[string]scrappers.Scrapper
+	output    string
 }
 
 func NewManager() *Manager {
@@ -31,4 +32,8 @@ func (m *Manager) SetScrapper(scrapper string) {
 		}
 	}
 	m.scrappers = s
+}
+
+func (m *Manager) SetOutput(output string) {
+	m.output = output
 }
