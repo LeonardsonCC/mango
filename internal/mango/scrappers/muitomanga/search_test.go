@@ -3,7 +3,7 @@ package muitomanga_test
 import (
 	"testing"
 
-	"github.com/LeonardsonCC/mango/internal/app/scrappers/muitomanga"
+	"github.com/LeonardsonCC/mango/internal/mango/scrappers/muitomanga"
 )
 
 func TestSearchMuitoManga(t *testing.T) {

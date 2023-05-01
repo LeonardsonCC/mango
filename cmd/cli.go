@@ -40,7 +40,9 @@ func (*Cli) Start() {
 func initialize() {
 	c.SetScrapper(scrapper)
 
-	if err := c.SetOutput(output); err != nil {
-		fmt.Printf("failed to set output folder %s\n", output)
+	if output != "" {
+		if err := c.SetOutput(output); err != nil {
+			fmt.Printf("failed to set output folder %s\n", output)
+		}
 	}
 }

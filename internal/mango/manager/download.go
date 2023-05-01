@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/LeonardsonCC/mango/internal/app/scrappers"
+	"github.com/LeonardsonCC/mango/internal/mango/scrappers"
 	"github.com/LeonardsonCC/mango/pkg/mysync"
 	"golang.org/x/sync/errgroup"
 )

@@ -3,7 +3,7 @@ package mangalivre_test
 import (
 	"testing"
 
-	"github.com/LeonardsonCC/mango/internal/app/scrappers/mangalivre"
+	"github.com/LeonardsonCC/mango/internal/mango/scrappers/mangalivre"
 )
 
 func TestDownloadmangalivre(t *testing.T) {

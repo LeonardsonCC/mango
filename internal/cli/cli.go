@@ -3,7 +3,7 @@ package cli
 import (
 	"os"
 
-	"github.com/LeonardsonCC/mango/internal/app/manager"
+	"github.com/LeonardsonCC/mango/internal/mango/manager"
 )
 
 type Cli struct {

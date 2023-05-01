@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/LeonardsonCC/mango/internal/app/scrappers"
+	"github.com/LeonardsonCC/mango/internal/mango/scrappers"
 	"github.com/LeonardsonCC/mango/internal/pkg/pdf"
 	"github.com/LeonardsonCC/mango/pkg/mysync"
 	"github.com/gocolly/colly"
