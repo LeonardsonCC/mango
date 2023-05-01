@@ -1,9 +1,9 @@
 package manager
 
 import (
-	"github.com/LeonardsonCC/mango/internal/mango/scrappers"
-	"github.com/LeonardsonCC/mango/internal/mango/scrappers/mangalivre"
-	"github.com/LeonardsonCC/mango/internal/mango/scrappers/muitomanga"
+	"github.com/LeonardsonCC/mango/mango/scrappers"
+	"github.com/LeonardsonCC/mango/mango/scrappers/mangalivre"
+	"github.com/LeonardsonCC/mango/mango/scrappers/muitomanga"
 )
 
 var scrp = map[string]scrappers.Scrapper{

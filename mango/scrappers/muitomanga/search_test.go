@@ -1,9 +1,9 @@
-package mangalivre_test
+package muitomanga_test
 
 import (
 	"testing"
 
-	"github.com/LeonardsonCC/mango/internal/mango/scrappers/mangalivre"
+	"github.com/LeonardsonCC/mango/mango/scrappers/muitomanga"
 )
 
 func TestSearchMuitoManga(t *testing.T) {
@@ -13,6 +13,7 @@ func TestSearchMuitoManga(t *testing.T) {
 			expectedUrl    string
 			expectedImgUrl string
 			expectedTitle  string
+			expectedErr    error
 		}
 		testCases := []tc{
 			{
@@ -29,10 +30,14 @@ func TestSearchMuitoManga(t *testing.T) {
 			},
 		}
 
-		s := mangalivre.NewScrapper()
+		s := muitomanga.NewScrapper()
 
 		for _, c := range testCases {
-			r, _ := s.SearchManga(c.q)
+			r, err := s.SearchManga(c.q)
+
+			if c.expectedErr != err {
+				t.Error("error is not match")
+			}
 
 			if len(r) == 0 {
 				t.Error("failed to get thumbnails")
@@ -58,7 +63,7 @@ func TestSearchMuitoManga(t *testing.T) {
 	})
 
 	t.Run("search chapter", func(t *testing.T) {
-		s := mangalivre.NewScrapper()
+		s := muitomanga.NewScrapper()
 
 		type tc struct {
 			q                   string
@@ -71,10 +76,17 @@ func TestSearchMuitoManga(t *testing.T) {
 		testCases := []tc{
 			{
 				q:                   "",
-				url:                 "https://mangalivre.net/manga/relife/1960",
-				expectedTitle:       "ReLIFE",
+				url:                 "https://muitomanga.com/manga/boruto-naruto-next-generations",
+				expectedTitle:       "Capítulo #78 Boruto Explorer",
 				expectedUrl:         "https://muitomanga.com/ler/boruto-naruto-next-generations/capitulo-78",
 				expectedAddedToSite: "21/02/2023",
+			},
+			{
+				q:                   "10",
+				url:                 "https://muitomanga.com/manga/boruto-naruto-next-generations",
+				expectedTitle:       "Capítulo #10 scansPROJECT",
+				expectedUrl:         "https://muitomanga.com/ler/boruto-naruto-next-generations/capitulo-10",
+				expectedAddedToSite: "20/09/2020",
 			},
 		}
 

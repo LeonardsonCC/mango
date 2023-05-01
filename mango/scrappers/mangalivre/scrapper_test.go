@@ -6,8 +6,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/LeonardsonCC/mango/internal/mango/scrappers"
-	"github.com/LeonardsonCC/mango/internal/mango/scrappers/mangalivre"
+	"github.com/LeonardsonCC/mango/mango/scrappers"
+	"github.com/LeonardsonCC/mango/mango/scrappers/mangalivre"
 )
 
 func TestMangaLivre(t *testing.T) {

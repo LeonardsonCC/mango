@@ -1,17 +1,18 @@
-package mangalivre
+package muitomanga
 
 import (
 	"fmt"
 
-	"github.com/LeonardsonCC/mango/internal/mango/scrappers"
+	"github.com/LeonardsonCC/mango/mango/scrappers"
 	"github.com/gocolly/colly"
 )
 
-const ScrapperName = "MangaLivre"
+const ScrapperName = "MuitoManga"
 
-var mainURL = "mangalivre.net"
+var mainURL = "muitomanga.com"
 var imagesURL = []string{
-	"static2.mangalivre.net/firefox/",
+	"imgs.muitomanga.com",
+	"imgs2.muitomanga.com",
 }
 
 type Scrapper struct {

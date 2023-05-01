@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/LeonardsonCC/mango/internal/mango/scrappers"
+	"github.com/LeonardsonCC/mango/mango/scrappers"
 )
 
 func (s *Scrapper) SearchManga(query string) ([]*scrappers.SearchMangaResult, error) {

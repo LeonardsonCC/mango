@@ -12,8 +12,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/LeonardsonCC/mango/internal/mango/scrappers"
 	"github.com/LeonardsonCC/mango/internal/pkg/pdf"
+	"github.com/LeonardsonCC/mango/mango/scrappers"
 	"github.com/LeonardsonCC/mango/pkg/mysync"
 )
 

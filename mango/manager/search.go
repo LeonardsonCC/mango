@@ -1,7 +1,7 @@
 package manager
 
 import (
-	"github.com/LeonardsonCC/mango/internal/mango/scrappers"
+	"github.com/LeonardsonCC/mango/mango/scrappers"
 	"github.com/LeonardsonCC/mango/pkg/mysync"
 	"golang.org/x/sync/errgroup"
 )
