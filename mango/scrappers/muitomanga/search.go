@@ -13,6 +13,11 @@ import (
 func (s *Scrapper) SearchManga(query string) ([]*scrappers.SearchMangaResult, error) {
 	var results []*scrappers.SearchMangaResult
 
+	var requestErr error
+	s.Colly.OnError(func(r *colly.Response, err error) {
+		requestErr = err
+	})
+
 	s.Colly.OnHTML(".anime", func(e *colly.HTMLElement) {
 		img := e.ChildAttr("img", "src")
 		link := e.ChildText("h3")
@@ -26,6 +31,10 @@ func (s *Scrapper) SearchManga(query string) ([]*scrappers.SearchMangaResult, er
 	err := s.Colly.Visit(fmt.Sprintf("%s/buscar?q=%s", s.baseURL, query))
 	if err != nil {
 		return nil, err
+	}
+
+	if requestErr != nil {
+		return nil, requestErr
 	}
 
 	return results, nil

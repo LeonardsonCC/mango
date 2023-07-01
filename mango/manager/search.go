@@ -1,35 +1,40 @@
 package manager
 
 import (
+	"sync"
+
 	"github.com/LeonardsonCC/mango/mango/scrappers"
 	"github.com/LeonardsonCC/mango/pkg/mysync"
-	"golang.org/x/sync/errgroup"
 )
 
-func (m *Manager) Search(name string) (map[string][]*scrappers.SearchMangaResult, error) {
+func (m *Manager) Search(name string) (map[string][]*scrappers.SearchMangaResult, map[string]error) {
 	results := mysync.NewMap(
 		make(map[string][]*scrappers.SearchMangaResult, len(m.scrappers)),
 	)
+	errs := mysync.NewMap(
+		make(map[string]error, len(m.scrappers)),
+	)
 
-	g := new(errgroup.Group)
+	var wg sync.WaitGroup
 
 	for k, s := range m.scrappers {
-		k := k
-		s := s
-		g.Go(func() error {
+		k, s := k, s
+
+		wg.Add(1)
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
 			r, err := s.SearchManga(name)
 			if err != nil {
-				return err
+				errs.Store(k, err)
+				results.Store(k, make([]*scrappers.SearchMangaResult, 0))
+				return
 			}
 
 			results.Store(k, r)
-			return nil
-		})
+		}(&wg)
 	}
 
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
+	wg.Wait()
 
-	return results.Map(), nil
+	return results.Map(), errs.Map()
 }

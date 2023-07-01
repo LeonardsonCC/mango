@@ -1,9 +1,11 @@
 package cli
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/LeonardsonCC/mango/internal/cli/colors"
+	"github.com/LeonardsonCC/mango/mango/scrappers"
 	"github.com/spf13/cobra"
 )
 
@@ -19,21 +21,31 @@ func (c *Cli) Search() *cobra.Command {
 func (c *Cli) search(cmd *cobra.Command, args []string) {
 	name := args[0]
 
-	results, err := c.manager.Search(name)
-	if err != nil {
-		fmt.Println(colors.Errors.Sprintf("failed to search by %s: %s", name, err.Error()))
-	}
+	results, errs := c.manager.Search(name)
 
 	for k, scrapper := range results {
-		fmt.Print(colors.Info.Sprintf("%s\n", k))
-
-		if len(scrapper) == 0 {
-			fmt.Print(colors.Warning.Sprint("no results..."))
-		}
-
-		for _, r := range scrapper {
-			fmt.Println(r.Title())
-		}
-		fmt.Printf("\n\n")
+		fmt.Printf(c.genOutput(k, scrapper, errs[k]))
 	}
+}
+
+func (c *Cli) genOutput(name string, results []*scrappers.SearchMangaResult, err error) string {
+	var str bytes.Buffer
+	str.WriteString(colors.Info.Sprintf("%s\n", name))
+
+	if err != nil {
+		str.WriteString(colors.Errors.Sprintf("Failed to search: %v\n", err))
+		str.WriteString("\n\n")
+		return str.String()
+	}
+
+	if len(results) == 0 {
+		str.WriteString(colors.Warning.Sprint("no results...\n"))
+	}
+
+	for _, r := range results {
+		str.WriteString(r.Title() + "\n")
+	}
+
+	str.WriteString("\n\n")
+	return str.String()
 }
