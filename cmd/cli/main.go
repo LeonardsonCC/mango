@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"fmt"
@@ -45,4 +45,8 @@ func initialize() {
 			fmt.Printf("failed to set output folder %s\n", output)
 		}
 	}
+}
+
+func main() {
+	NewCli().Start()
 }
