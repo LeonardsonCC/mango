@@ -1,9 +1,12 @@
 package cli
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/LeonardsonCC/mango/internal/cli/colors"
+	"github.com/LeonardsonCC/mango/internal/cli/spinner"
+	"github.com/LeonardsonCC/mango/mango/scrappers"
 	"github.com/spf13/cobra"
 )
 
@@ -19,25 +22,43 @@ func (c *Cli) List() *cobra.Command {
 func (c *Cli) list(cmd *cobra.Command, args []string) {
 	name := args[0]
 
-	results, err := c.manager.ListChapters(name)
-	if err != nil {
-		fmt.Println(colors.Errors.Sprintf("failed to list chapters: %s", err.Error()))
-	}
+	loading := make(chan struct{})
 
-	if len(results) < 1 {
-		fmt.Println(colors.Errors.Sprint("no chapters found for this manga"))
-		return
-	}
+	var (
+		results map[string][]*scrappers.SearchChapterResult
+		errs    map[string]error
+	)
+
+	go func() {
+		results, errs = c.manager.ListChapters(name)
+		loading <- struct{}{}
+	}()
+
+	spinner.Loading(loading, "Listing chapters...")
 
 	for k, r := range results {
-		fmt.Println(colors.Info.Sprint(k))
-
-		if len(r) == 0 {
-			fmt.Println(colors.Errors.Sprint("no chapters found"))
-		}
-
-		for _, c := range r {
-			fmt.Println(c.Title())
-		}
+		fmt.Print(c.genOutputList(k, r, errs[k]))
 	}
+}
+
+func (c *Cli) genOutputList(name string, results []*scrappers.SearchChapterResult, err error) string {
+	var str bytes.Buffer
+	str.WriteString(colors.Info.Sprintf("%s\n", name))
+
+	if err != nil {
+		str.WriteString(colors.Errors.Sprintf("Failed to search: %v\n", err))
+		str.WriteString("\n\n")
+		return str.String()
+	}
+
+	if len(results) == 0 {
+		str.WriteString(colors.Warning.Sprint("no results...\n"))
+	}
+
+	for _, r := range results {
+		str.WriteString(r.Title() + "\n")
+	}
+
+	str.WriteString("\n\n")
+	return str.String()
 }

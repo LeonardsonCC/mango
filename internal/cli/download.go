@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/LeonardsonCC/mango/internal/cli/colors"
+	"github.com/LeonardsonCC/mango/internal/cli/spinner"
 	"github.com/spf13/cobra"
 )
 
@@ -38,19 +39,39 @@ func (c *Cli) downloadChapter(cmd *cobra.Command, args []string) {
 	name := args[0]
 	chapter := args[1]
 
-	err := c.manager.DownloadChapter(name, chapter)
+	loading := make(chan struct{})
+
+	var err error
+	go func() {
+		err = c.manager.DownloadChapter(name, chapter)
+		loading <- struct{}{}
+	}()
+
+	spinner.Loading(loading, "Downloading chapter...")
+
 	if err != nil {
 		fmt.Println(colors.Errors.Sprintf("error: %v", err))
 		os.Exit(1)
 	}
+	fmt.Println(colors.Info.Sprintf("Downloaded with success"))
 }
 
 func (c *Cli) downloadManga(cmd *cobra.Command, args []string) {
 	name := args[0]
 
-	err := c.manager.DownloadManga(name)
+	loading := make(chan struct{})
+
+	var err error
+	go func() {
+		err = c.manager.DownloadManga(name)
+		loading <- struct{}{}
+	}()
+
+	spinner.Loading(loading, "Downloading all chapters...")
+
 	if err != nil {
 		fmt.Println(colors.Errors.Sprintf("error: %v", err))
 		os.Exit(1)
 	}
+	fmt.Println(colors.Info.Sprintf("Downloaded with success"))
 }

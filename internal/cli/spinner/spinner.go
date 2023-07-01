@@ -51,9 +51,9 @@ func (s *Spinner) Set(frames string) {
 	s.length = len(s.frames)
 }
 
-func Loading(loading <-chan struct{}) {
+func Loading(loading <-chan struct{}, message string) {
 	s := New()
-	loadStr := "\r%s Loading..."
+	var strLen int
 
 	isLoading := true
 	for isLoading {
@@ -63,11 +63,13 @@ func Loading(loading <-chan struct{}) {
 		default: // must have default for non-blocking op
 		}
 
-		fmt.Printf(loadStr, s.Next())
+		str := fmt.Sprintf("\r%s %s", s.Next(), message)
+		strLen = len(str)
+		fmt.Print(str)
 		time.Sleep(100 * time.Millisecond)
 	}
 
-	fmt.Printf("\r%s\r", strings.Repeat(" ", len(loadStr)))
+	fmt.Printf("\r%s\r", strings.Repeat(" ", strLen))
 }
 
 // Current returns the current rune in the sequence.

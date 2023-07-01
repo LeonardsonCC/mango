@@ -34,14 +34,14 @@ func (c *Cli) search(cmd *cobra.Command, args []string) {
 		loading <- struct{}{}
 	}()
 
-	spinner.Loading(loading)
+	spinner.Loading(loading, "Searching...")
 
 	for k, scrapper := range results {
-		fmt.Print(c.genOutput(k, scrapper, errs[k]))
+		fmt.Print(c.genOutputSearch(k, scrapper, errs[k]))
 	}
 }
 
-func (c *Cli) genOutput(name string, results []*scrappers.SearchMangaResult, err error) string {
+func (c *Cli) genOutputSearch(name string, results []*scrappers.SearchMangaResult, err error) string {
 	var str bytes.Buffer
 	str.WriteString(colors.Info.Sprintf("%s\n", name))
 
