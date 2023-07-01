@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/LeonardsonCC/mango/internal/cli/colors"
+	"github.com/LeonardsonCC/mango/internal/cli/spinner"
 	"github.com/LeonardsonCC/mango/mango/scrappers"
 	"github.com/spf13/cobra"
 )
@@ -21,10 +22,22 @@ func (c *Cli) Search() *cobra.Command {
 func (c *Cli) search(cmd *cobra.Command, args []string) {
 	name := args[0]
 
-	results, errs := c.manager.Search(name)
+	loading := make(chan struct{})
+
+	var (
+		results map[string][]*scrappers.SearchMangaResult
+		errs    map[string]error
+	)
+
+	go func() {
+		results, errs = c.manager.Search(name)
+		loading <- struct{}{}
+	}()
+
+	spinner.Loading(loading)
 
 	for k, scrapper := range results {
-		fmt.Printf(c.genOutput(k, scrapper, errs[k]))
+		fmt.Print(c.genOutput(k, scrapper, errs[k]))
 	}
 }
 
