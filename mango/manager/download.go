@@ -22,7 +22,7 @@ func (m *Manager) DownloadChapter(name, chapter string) error {
 		if len(s) > 0 {
 			scrapper := m.scrappers[k]
 			manga := s[0]
-			found, err := scrapper.SearchChapter(manga.Url(), chapter)
+			found, err := scrapper.SearchChapter(manga, chapter)
 			if err != nil {
 				return err
 			}
@@ -38,7 +38,7 @@ func (m *Manager) DownloadChapter(name, chapter string) error {
 
 	for k, scr := range c {
 		if len(scr) > 0 {
-			m, err := m.scrappers[k].Download(scr[0].Url())
+			m, err := m.scrappers[k].Download(scr[0])
 			if err != nil {
 				continue
 			}
@@ -63,7 +63,7 @@ func (m *Manager) DownloadChapter(name, chapter string) error {
 	return nil
 }
 
-func (m *Manager) DownloadManga(name string) error {
+func (m *Manager) DownloadAllChapters(mangaName string) error {
 	results := mysync.NewMap(
 		make(map[string][]*scrappers.SearchMangaResult, len(m.scrappers)),
 	)
@@ -74,7 +74,7 @@ func (m *Manager) DownloadManga(name string) error {
 		k := k
 		s := s
 		g.Go(func() error {
-			r, err := s.SearchManga(name)
+			r, err := s.SearchManga(mangaName)
 			if err != nil {
 				return err
 			}
@@ -96,7 +96,7 @@ func (m *Manager) DownloadManga(name string) error {
 			scrapper := m.scrappers[k]
 			manga := s[0]
 			// get all chapters
-			found, err := scrapper.SearchChapter(manga.Url(), "")
+			found, err := scrapper.SearchChapter(manga, "")
 			if err != nil {
 				return err
 			}
@@ -107,7 +107,7 @@ func (m *Manager) DownloadManga(name string) error {
 
 	c := chapters.Map()
 	if len(c) == 0 {
-		return fmt.Errorf("none of the scrappers found the manga %s", name)
+		return fmt.Errorf("none of the scrappers found the manga %s", mangaName)
 	}
 
 	g = new(errgroup.Group)
@@ -118,7 +118,7 @@ func (m *Manager) DownloadManga(name string) error {
 			for _, chap := range scr {
 				chap := chap
 				g.Go(func() error {
-					mang, err := m.scrappers[k].Download(chap.Url())
+					mang, err := m.scrappers[k].Download(chap)
 					if err != nil {
 						return err
 					}

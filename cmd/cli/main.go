@@ -18,6 +18,7 @@ var (
 	c        = cli.NewCli()
 	scrapper = ""
 	output   = ""
+	language = ""
 )
 
 func (*Cli) Start() {
@@ -26,6 +27,7 @@ func (*Cli) Start() {
 	root := cobra.Command{}
 	root.PersistentFlags().StringVarP(&scrapper, "site", "s", "", "Specify the one scrapper, supported: MuitoManga, MangaLivre")
 	root.PersistentFlags().StringVarP(&output, "output", "o", "", "Output folder")
+	root.PersistentFlags().StringVarP(&language, "language", "l", "", "Language")
 
 	root.AddCommand(c.Download())
 	root.AddCommand(c.Search())
@@ -45,6 +47,8 @@ func initialize() {
 			fmt.Printf("failed to set output folder %s\n", output)
 		}
 	}
+
+	c.SetLanguage(language)
 }
 
 func main() {

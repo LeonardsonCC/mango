@@ -1,4 +1,4 @@
-package muitomanga
+package mangadex
 
 import (
 	"fmt"
@@ -7,18 +7,18 @@ import (
 	"github.com/gocolly/colly"
 )
 
-const ScrapperName = "MuitoManga"
+const ScrapperName = "MangaDex"
 
-var mainURL = "muitomanga.com"
-var imagesURL = []string{
-	"imgs.muitomanga.com",
-	"imgs2.muitomanga.com",
-}
+var mainURL = "mangadex.org"
+var apiMainURL = "api.mangadex.org"
+var imagesURL = []string{}
 
 type Scrapper struct {
 	name           string
+	apiBaseURL     string
 	baseURL        string
 	imagesBaseURLs []string
+	language       string
 	Colly          *colly.Collector
 }
 
@@ -37,10 +37,16 @@ func NewScrapper() scrappers.Scrapper {
 		name:           ScrapperName,
 		Colly:          c,
 		baseURL:        fmt.Sprintf("https://%s", mainURL),
+		apiBaseURL:     fmt.Sprintf("https://%s", apiMainURL),
 		imagesBaseURLs: imgsBaseUrls,
+		language:       "pt-br",
 	}
 }
 
 func (s *Scrapper) Name() string {
 	return s.name
+}
+
+func (s *Scrapper) SetLanguage(lang string) {
+	s.language = lang
 }

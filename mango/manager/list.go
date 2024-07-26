@@ -37,7 +37,7 @@ func (m *Manager) ListChapters(name string) (map[string][]*scrappers.SearchChapt
 			}
 
 			manga := r[0]
-			chapters, err := s.SearchChapter(manga.Url(), "")
+			chapters, err := s.SearchChapter(manga, "")
 			if err != nil {
 				errs.Store(k, err)
 				results.Store(k, make([]*scrappers.SearchChapterResult, 0))

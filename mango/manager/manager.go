@@ -2,23 +2,23 @@ package manager
 
 import (
 	"github.com/LeonardsonCC/mango/mango/scrappers"
-	"github.com/LeonardsonCC/mango/mango/scrappers/mangalivre"
-	"github.com/LeonardsonCC/mango/mango/scrappers/muitomanga"
+	"github.com/LeonardsonCC/mango/mango/scrappers/mangadex"
 )
 
 var scrp = map[string]scrappers.Scrapper{
-	"MuitoManga": muitomanga.NewScrapper(),
-	"MangaLivre": mangalivre.NewScrapper(),
+	"MangaDex": mangadex.NewScrapper(),
 }
 
 type Manager struct {
 	scrappers map[string]scrappers.Scrapper
 	output    string
+	language  string
 }
 
 func NewManager() *Manager {
 	return &Manager{
 		scrappers: scrp,
+		language:  "pt-br",
 	}
 }
 
@@ -36,4 +36,11 @@ func (m *Manager) SetScrapper(scrapper string) {
 
 func (m *Manager) SetOutput(output string) {
 	m.output = output
+}
+
+func (m *Manager) SetLanguage(language string) {
+	m.language = language
+	for _, scrp := range m.scrappers {
+		scrp.SetLanguage(language)
+	}
 }

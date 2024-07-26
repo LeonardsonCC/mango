@@ -56,7 +56,7 @@ func (c *Cli) genOutputList(name string, results []*scrappers.SearchChapterResul
 	}
 
 	for _, r := range results {
-		str.WriteString(r.Title() + "\n")
+		str.WriteString(r.Chapter() + " - " + r.Title() + "\n")
 	}
 
 	str.WriteString("\n\n")

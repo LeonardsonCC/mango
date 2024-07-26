@@ -19,6 +19,10 @@ func (c *Cli) SetScrapper(scrapper string) {
 	c.manager.SetScrapper(scrapper)
 }
 
+func (c *Cli) SetLanguage(language string) {
+	c.manager.SetLanguage(language)
+}
+
 func (c *Cli) SetOutput(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		err = os.Mkdir(path, os.ModePerm)

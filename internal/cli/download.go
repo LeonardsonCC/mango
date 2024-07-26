@@ -63,7 +63,7 @@ func (c *Cli) downloadManga(cmd *cobra.Command, args []string) {
 
 	var err error
 	go func() {
-		err = c.manager.DownloadManga(name)
+		err = c.manager.DownloadAllChapters(name)
 		loading <- struct{}{}
 	}()
 
