@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"runtime"
+	"strings"
 
 	"github.com/LeonardsonCC/mango/mango/scrappers"
 	"github.com/LeonardsonCC/mango/pkg/mysync"
@@ -51,7 +53,14 @@ func (m *Manager) DownloadChapter(name, chapter string) error {
 		return fmt.Errorf("failed to find chapter %s in manga %s", name, chapter)
 	}
 
-	filename := path.Join(m.output, fmt.Sprintf("%s.pdf", manga.Title))
+	title := manga.Title
+
+	// i hate windows
+	if runtime.GOOS == "windows" {
+		title = strings.ReplaceAll(manga.Title, ":", "")
+	}
+
+	filename := path.Join(m.output, fmt.Sprintf("%s.pdf", title))
 	f, _ := os.Create(filename)
 	defer f.Close()
 

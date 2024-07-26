@@ -48,7 +48,9 @@ func initialize() {
 		}
 	}
 
-	c.SetLanguage(language)
+	if language != "" {
+		c.SetLanguage(language)
+	}
 }
 
 func main() {

@@ -67,8 +67,6 @@ func (s *Scrapper) SearchChapter(manga *scrappers.SearchMangaResult, query strin
 	limit := 100
 	i := 0
 
-	fmt.Printf("\n%s\n", s.language)
-
 outer:
 	for {
 		formData := url.Values{
