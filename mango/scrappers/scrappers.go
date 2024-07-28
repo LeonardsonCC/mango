@@ -6,6 +6,7 @@ type Scrapper interface {
 	Download(chapter *SearchChapterResult) (*Manga, error)
 	Name() string
 	SetLanguage(language string)
+	SetInfoChannel(info chan string)
 }
 
 type SearchMangaResult struct {

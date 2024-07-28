@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"runtime"
-	"strings"
+	"regexp"
 
 	"github.com/LeonardsonCC/mango/mango/scrappers"
 	"github.com/LeonardsonCC/mango/pkg/mysync"
@@ -53,14 +52,7 @@ func (m *Manager) DownloadChapter(name, chapter string) error {
 		return fmt.Errorf("failed to find chapter %s in manga %s", name, chapter)
 	}
 
-	title := manga.Title
-
-	// i hate windows
-	if runtime.GOOS == "windows" {
-		title = strings.ReplaceAll(manga.Title, ":", "")
-	}
-
-	filename := path.Join(m.output, fmt.Sprintf("%s.pdf", title))
+	filename := path.Join(m.output, fmt.Sprintf("%s.pdf", MakeFileName(manga.Title)))
 	f, _ := os.Create(filename)
 	defer f.Close()
 
@@ -82,6 +74,9 @@ func (m *Manager) DownloadAllChapters(mangaName string) error {
 	for k, s := range m.scrappers {
 		k := k
 		s := s
+
+		s.SetInfoChannel(m.infoChannel)
+
 		g.Go(func() error {
 			r, err := s.SearchManga(mangaName)
 			if err != nil {
@@ -89,6 +84,7 @@ func (m *Manager) DownloadAllChapters(mangaName string) error {
 			}
 
 			results.Store(k, r)
+			m.infoChannel <- fmt.Sprintf("manga found: %s", r[0].Title())
 			return nil
 		})
 	}
@@ -110,6 +106,7 @@ func (m *Manager) DownloadAllChapters(mangaName string) error {
 				return err
 			}
 
+			m.infoChannel <- fmt.Sprintf("chapters found: %d", len(found))
 			chapters.Store(k, found)
 		}
 	}
@@ -120,7 +117,7 @@ func (m *Manager) DownloadAllChapters(mangaName string) error {
 	}
 
 	g = new(errgroup.Group)
-	g.SetLimit(20)
+	g.SetLimit(40)
 
 	for k, scr := range c {
 		if len(scr) > 0 {
@@ -131,15 +128,25 @@ func (m *Manager) DownloadAllChapters(mangaName string) error {
 					if err != nil {
 						return err
 					}
+					m.infoChannel <- fmt.Sprintf("downloaded: %s", chap.Chapter())
 
-					filename := path.Join(m.output, fmt.Sprintf("%s.pdf", mang.Title))
-					f, _ := os.Create(filename)
+					filename := path.Join(m.output, fmt.Sprintf("%s.pdf", MakeFileName(mang.Title)))
+					f, err := os.Create(filename)
+					if err != nil {
+						m.infoChannel <- fmt.Sprintf("failed to create file: %s", filename)
+					}
+
 					defer f.Close()
 
-					_, err = f.Write(mang.Buffer.Bytes())
-					if err != nil {
+					n, err := f.Write(mang.Buffer.Bytes())
+					if err != nil || n == 0 {
+						m.infoChannel <- fmt.Sprintf("failed to write pdf: %s", err)
 						return fmt.Errorf("failed to save pdf")
 					}
+					if n == 431 {
+						m.infoChannel <- mang.Buffer.String()
+					}
+
 					return nil
 				})
 			}
@@ -151,4 +158,10 @@ func (m *Manager) DownloadAllChapters(mangaName string) error {
 		return err
 	}
 	return nil
+}
+
+var invalidNameRegexp = regexp.MustCompile(`[/\\?%*:|"<>]`)
+
+func MakeFileName(title string) string {
+	return invalidNameRegexp.ReplaceAllString(title, "")
 }

@@ -20,6 +20,7 @@ type Scrapper struct {
 	imagesBaseURLs []string
 	language       string
 	Colly          *colly.Collector
+	infoChannel    chan string
 }
 
 func NewScrapper() scrappers.Scrapper {
@@ -49,4 +50,8 @@ func (s *Scrapper) Name() string {
 
 func (s *Scrapper) SetLanguage(lang string) {
 	s.language = lang
+}
+
+func (s *Scrapper) SetInfoChannel(info chan string) {
+	s.infoChannel = info
 }

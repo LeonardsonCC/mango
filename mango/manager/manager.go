@@ -10,9 +10,10 @@ var scrp = map[string]scrappers.Scrapper{
 }
 
 type Manager struct {
-	scrappers map[string]scrappers.Scrapper
-	output    string
-	language  string
+	scrappers   map[string]scrappers.Scrapper
+	output      string
+	language    string
+	infoChannel chan string
 }
 
 func NewManager() *Manager {
@@ -43,4 +44,8 @@ func (m *Manager) SetLanguage(language string) {
 	for _, scrp := range m.scrappers {
 		scrp.SetLanguage(language)
 	}
+}
+
+func (m *Manager) SetInfoChannel(info chan string) {
+	m.infoChannel = info
 }

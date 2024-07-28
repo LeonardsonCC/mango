@@ -61,13 +61,29 @@ func (c *Cli) downloadManga(cmd *cobra.Command, args []string) {
 
 	loading := make(chan struct{})
 
+	info := make(chan string)
+
+	c.manager.SetInfoChannel(info)
+
 	var err error
 	go func() {
 		err = c.manager.DownloadAllChapters(name)
 		loading <- struct{}{}
 	}()
 
-	spinner.Loading(loading, "Downloading all chapters...")
+	// spinner.Loading(loading, "Downloading all chapters...")
+	fmt.Println("loading...")
+
+outerLoop:
+	for {
+		select {
+		case v := <-info:
+			fmt.Println(v)
+		case <-loading:
+			break outerLoop
+		default:
+		}
+	}
 
 	if err != nil {
 		fmt.Println(colors.Errors.Sprintf("error: %v", err))

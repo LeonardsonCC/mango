@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/LeonardsonCC/mango/internal/pkg/pdf"
 	"github.com/LeonardsonCC/mango/mango/scrappers"
@@ -16,28 +17,44 @@ import (
 )
 
 func (s *Scrapper) Download(chapter *scrappers.SearchChapterResult) (*scrappers.Manga, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/at-home/server/%s?forcePort443=false", s.apiBaseURL, chapter.ID()))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
+	var retry int
 
 	result := new(entity.ChapterPagesResult)
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
-		log.Fatal(err)
+	for {
+		retry++
+
+		resp, err := http.Get(fmt.Sprintf("%s/at-home/server/%s?forcePort443=false", s.apiBaseURL, chapter.ID()))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+
+		err = json.NewDecoder(resp.Body).Decode(&result)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			time.Sleep(1 * time.Second)
+			continue
+		}
+
+		if retry >= 3 {
+			s.infoChannel <- fmt.Sprintf("failed to get chapter info: %s - %s", resp.Status, chapter.Chapter())
+			break
+		}
 	}
 
-	pagesToGet := make(map[int]string)
+	pagesToCollect := make(map[int]string)
 	for i, page := range result.Chapter.Data {
-		pagesToGet[i] = fmt.Sprintf("%s/data/%s/%s", result.BaseURL, result.Chapter.Hash, page)
+		pagesToCollect[i] = fmt.Sprintf("%s/data/%s/%s", result.BaseURL, result.Chapter.Hash, page)
 	}
 
-	pages := s.collectPages(pagesToGet)
+	pages := s.collectPages(pagesToCollect)
 
 	w := bytes.NewBuffer([]byte{})
 
-	err = pdf.GeneratePdf(pages, w)
+	err := pdf.GeneratePdf(pages, w)
 
 	// print warnings from pdf generation
 	if v, ok := err.(*pdf.Warnings); ok {
@@ -63,13 +80,15 @@ func (s *Scrapper) collectPages(p map[int]string) map[int][]byte {
 		go func(wg *sync.WaitGroup, page string, i int) {
 			resp, err := http.Get(page)
 			if err != nil {
-				log.Fatal(err)
+				s.infoChannel <- err.Error()
+				return
 			}
 			defer resp.Body.Close()
 
 			res, err := io.ReadAll(resp.Body)
 			if err != nil {
-				log.Fatal(err)
+				s.infoChannel <- err.Error()
+				return
 			}
 
 			pages.Store(i, res)
